@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Advancements - GabiMinecraft02</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #1e1e2f; color: #fff; padding: 20px; }
+    h1, h2 { text-align: center; }
+    .gallery img { width: 150px; margin: 5px; border-radius: 5px; }
+    .back-button { text-align: center; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<div class="back-button">
+    <a href="http://localhost:5000/"><button>← Retour au site principal</button></a>
+</div>
+
+<h1>Advancements / Publications</h1>
+
+<h2>Images publiées</h2>
+<div class="gallery">
+{% for img in images %}
+    <img src="{{ url_for('static', filename='uploads/' + img) }}" alt="{{ img }}">
+{% endfor %}
+</div>
+
+<h2>Textes publiés</h2>
+<div>
+{% for line in texts %}
+    <p>{{ line }}</p>
+{% endfor %}
+</div>
+
+</body>
+</html>
