@@ -23,4 +23,6 @@ def advancements():
     return render_template("advancements.html", images=images, texts=texts)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)  # port spécifique au 3ème site
+    import os
+    port = int(os.environ.get("PORT", 10000))  # Render définit $PORT automatiquement
+    app.run(host="0.0.0.0", port=port, debug=True)
