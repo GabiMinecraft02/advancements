@@ -1,28 +1,49 @@
-from flask import Flask, render_template
 import os
+from flask import Flask, render_template, request, redirect, url_for
+from werkzeug.utils import secure_filename
 
+# --- ⚙️ Configuration du port en tout premier ---
+PORT = int(os.environ.get("PORT", 10000))  # Render donne automatiquement une variable d’environnement PORT
+HOST = "0.0.0.0"
+
+# --- 🚀 Initialisation de Flask ---
 app = Flask(__name__)
 
-# Dossier où sont stockées les images et textes
-UPLOAD_FOLDER = os.path.join("static", "uploads")
+# --- 📂 Configuration des uploads ---
+UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# --- 🌐 Routes principales ---
 
 @app.route("/")
-def advancements():
-    # Liste des images
-    images = [f for f in os.listdir(UPLOAD_FOLDER)
-              if f.lower().endswith((".jpg", ".png", ".jpeg", ".gif"))]
+def login():
+    """Page de connexion"""
+    return render_template("login.html")
 
-    # Texte
-    texts = []
-    text_file = os.path.join(UPLOAD_FOLDER, "text.txt")
-    if os.path.exists(text_file):
-        with open(text_file, "r", encoding="utf-8") as f:
-            texts = f.readlines()
+@app.route("/dashboard")
+def dashboard():
+    """Page principale du tableau de bord"""
+    return render_template("dashboard.html")
 
-    return render_template("advancements.html", images=images, texts=texts)
+@app.route("/upload", methods=["POST"])
+def upload_file():
+    """Upload d’un fichier et redirection"""
+    if "file" not in request.files:
+        return "Aucun fichier envoyé", 400
 
+    file = request.files["file"]
+    if file.filename == "":
+        return "Nom de fichier vide", 400
+
+    if file:
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(filepath)
+        return render_template("upload_success.html", filename=filename)
+
+    return redirect(url_for("dashboard"))
+
+# --- 🚀 Lancement de l’app ---
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))  # Render définit $PORT automatiquement
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host=HOST, port=PORT, debug=True)
